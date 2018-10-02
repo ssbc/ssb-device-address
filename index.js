@@ -28,8 +28,7 @@ exports.init = function (sbot, config) {
 
   function add(peer) {
     //TODO: update scuttlebot/plugins/gossip to accept multiserver addresses
-    //sbot.gossip.add(state[k])
-
+    sbot.gossip.add({key: peer.id, address: peer.address})
   }
 
   pull(
