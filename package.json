@@ -1,6 +1,6 @@
 {
-  "name": "ssb-public",
-  "description": "",
+  "name": "ssb-device-address",
+  "description": "advertise the address for a device",
   "version": "1.0.0",
   "homepage": "https://github.com/dominictarr/ssb-public",
   "repository": {
@@ -8,7 +8,8 @@
     "url": "git://github.com/dominictarr/ssb-public.git"
   },
   "dependencies": {
-    "pull-stream": "^3.6.9"
+    "pull-stream": "^3.6.9",
+    "ssb-ref": "^2.13.3"
   },
   "devDependencies": {
     "scuttlebot": "^12.2.0",
