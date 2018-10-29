@@ -27,7 +27,7 @@ tape('announce', function (t) {
     t.notOk(err)
     t.notOk(data) //nothing has been set yet
     alice.deviceAddress.announce({
-      address: alice.getAddress(),
+      scope: 'public',
       availability: 0.8
     }, function (err, msg) {
       if(err) throw err
@@ -50,4 +50,5 @@ tape('shutdown', function (t) {
   alice.close()
   t.end()
 })
+
 
