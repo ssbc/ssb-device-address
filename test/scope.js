@@ -22,12 +22,14 @@ tape('getAddress', function (t) {
 
 tape('announce', function (t) {
   console.log('addr', alice.getAddress())
-  t.ok(alice.getAddress('public'))
+  var scope = alice.getAddress('local') ? 'local' : 'device'
+  var addr = alice.getAddress('local') || alice.getAddress('device')
+  t.ok(addr)
   alice.deviceAddress.getAddress(alice.id, function (err, data) {
     t.notOk(err)
     t.notOk(data) //nothing has been set yet
     alice.deviceAddress.announce({
-      scope: 'public',
+      scope: scope,
       availability: 0.8
     }, function (err, msg) {
       if(err) throw err
@@ -36,7 +38,7 @@ tape('announce', function (t) {
         alice.deviceAddress.getAddress(alice.id, function (err, data) {
           t.notOk(err)
           t.ok(data)
-          t.equal(data.address, alice.getAddress())
+          t.equal(data.address, addr)
           t.equal(data.availability, 0.8)
           t.end()
         })

@@ -21,13 +21,16 @@ tape('getAddress', function (t) {
 })
 
 tape('announce', function (t) {
-  console.log('addr', alice.getAddress())
-  t.ok(alice.getAddress('public'))
+  var addr = alice.getAddress('local') || alice.getAddress('device')
+  console.log('addr', addr)
+  t.ok(addr, 'alice has an address, at least local or device')
+  //although, we would not advertise a device address in practice.
+
   alice.deviceAddress.getAddress(alice.id, function (err, data) {
-    t.notOk(err)
-    t.notOk(data) //nothing has been set yet
+    t.notOk(err, 'not an error')
+    t.notOk(data, 'expected no address so far') //nothing has been set yet
     alice.deviceAddress.announce({
-      address: alice.getAddress(),
+      address: addr,
       availability: 0.8
     }, function (err, msg) {
       if(err) throw err
@@ -36,7 +39,7 @@ tape('announce', function (t) {
         alice.deviceAddress.getAddress(alice.id, function (err, data) {
           t.notOk(err)
           t.ok(data)
-          t.equal(data.address, alice.getAddress())
+          t.equal(data.address, addr)
           t.equal(data.availability, 0.8)
           t.end()
         })
@@ -50,4 +53,5 @@ tape('shutdown', function (t) {
   alice.close()
   t.end()
 })
+
 
