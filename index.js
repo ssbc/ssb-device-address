@@ -41,6 +41,7 @@ exports.init = function (sbot, config) {
   pull(
     sbot.query.read({query: query(undefined), old: true, live: false, sync: false}),
     pull.drain(function (data) {
+      if(data.availability == null) data.availability = 0.33
       state[data.id] = data
     }, function (err, data) {
       for(var k in state) add(state[k])
@@ -56,6 +57,7 @@ exports.init = function (sbot, config) {
   pull(
     sbot.query.read({query: query(undefined), old:false, live: true, sync: false}),
     pull.drain(function (data) {
+      if(data.availability == null) data.availability = 0.33
       state[data.id] = data
       add(data)
     })
@@ -98,5 +100,4 @@ exports.init = function (sbot, config) {
     }
   }
 }
-
 
