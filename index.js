@@ -1,15 +1,21 @@
 var pull = require('pull-stream')
+var ref = require('ssb-ref')
 
-exports.name = 'public'
+function isString(s) {
+  return 'string' === typeof s
+}
+
+exports.name = 'device-address'
 exports.version = require('./package.json').version
 exports.manifest = {
   getAddress: 'async',
+  getState: 'async',
   announce: 'async'
 }
 
 function query (id) {
   return [
-    {$filter: {value: {/*author: id, */content: {type: 'address'}}}},
+    {$filter: {value: {content: {type: 'address'}}}},
     {$map: {
       id: ['value', 'author'],
       sequence: ['value', 'sequence'],
@@ -31,6 +37,7 @@ exports.init = function (sbot, config) {
     sbot.gossip.add({key: peer.id, address: peer.address})
   }
 
+  //build up the base state object
   pull(
     sbot.query.read({query: query(undefined), old: true, live: false, sync: false}),
     pull.drain(function (data) {
@@ -43,6 +50,9 @@ exports.init = function (sbot, config) {
     })
   )
 
+  //collect live updates to state.
+  //if we had support for realtime reduce
+  //queries we wouldn't need to do this
   pull(
     sbot.query.read({query: query(undefined), old:false, live: true, sync: false}),
     pull.drain(function (data) {
@@ -56,26 +66,37 @@ exports.init = function (sbot, config) {
     else waiting.push(fn)
   }
   return self = {
+    getState: function (_, cb) {
+      if(!cb) cb = _
+      cb(null, state)
+    },
     getAddress: function (id,  cb) {
       onReady(function () {
         cb(null, state[id || sbot.id])
       })
     },
-    announce: function (options, cb) {
+    announce: function (opts, cb) {
       self.getAddress(sbot.id, function (err, data) {
         if(data) {
-          if(data.address === options.address && data.availability === options.availability)
+          if(data.address === opts.address && data.availability === opts.availability)
             return cb(null, data)
         }
+        if(isString(opts.scope) && !ref.isAddress(opts.address)) {
+          opts.address = sbot.getAddress(opts.scope)
+        }
+        if(!ref.isAddress(opts.address) || 'object' == typeof opts.address)
+          return cb(new Error('not a valid address:'+opts.address))
+
         sbot.publish({
           type: 'address',
-          recps: options.recps,
-          address: options.address,
-          availability: options.availability
+          recps: opts.recps,
+          address: opts.address,
+          availability: opts.availability
         }, cb)
 
       })
     }
   }
 }
+
 
