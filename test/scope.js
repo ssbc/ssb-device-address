@@ -11,6 +11,8 @@ var alice = Scuttlebot({
   keys:ssbKeys.generate(),
 })
 
+var scope = alice.getAddress('local') ? 'local' : 'device'
+var addr = alice.getAddress('local') || alice.getAddress('device')
 
 tape('getAddress', function (t) {
   alice.deviceAddress.getAddress(alice.id, function (err, data) {
@@ -20,10 +22,9 @@ tape('getAddress', function (t) {
   })
 })
 
+
 tape('announce', function (t) {
   console.log('addr', alice.getAddress())
-  var scope = alice.getAddress('local') ? 'local' : 'device'
-  var addr = alice.getAddress('local') || alice.getAddress('device')
   t.ok(addr)
   alice.deviceAddress.getAddress(alice.id, function (err, data) {
     t.notOk(err)
@@ -48,9 +49,26 @@ tape('announce', function (t) {
 })
 
 
+tape('announce an unknown scope', function (t) {
+  alice.deviceAddress.announce({
+    scope: 'super-public',
+    availability: 1
+  }, function (err) {
+    t.ok(err)
+    alice.deviceAddress.getAddress(alice.id, function (err, data) {
+      if(err) throw err
+      t.deepEqual(data.address, addr)
+      t.end()
+    })
+  })
+})
+
 tape('shutdown', function (t) {
   alice.close()
   t.end()
 })
+
+
+
 
 
