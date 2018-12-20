@@ -89,6 +89,9 @@ exports.init = function (sbot, config) {
         if(!ref.isAddress(opts.address) || 'object' == typeof opts.address)
           return cb(new Error('not a valid address:'+opts.address))
 
+        if(!(opts.availability >= 0 && opts.availability <= 1))
+          return cb(new Error('availability must be number between 0 and 1 inclusive'))
+
         sbot.publish({
           type: 'address',
           recps: opts.recps,
