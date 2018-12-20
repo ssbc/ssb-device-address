@@ -7,7 +7,9 @@ this you _may not_ announce addresses for other feeds, only yourself.
 ## usage
 
 announce your address and availability. availability is an estimate between 0 and 1
-of the probability you'll be online at any given time.
+of the probability you'll be online at any given time. Availability
+helps peers prioritize connecting to you, if you are unsure
+set a lower value. Setting availability is mandatory.
 
 ```
 sbot deviceAddress.announce --addess <address> --availability 0.6
@@ -37,11 +39,7 @@ return the public address for `id`, if one has been posted.
 
 ### announce({address: addr?, availability:0-1}, cb) => post the current address, or addr if given
 
-
 ## License
 
 MIT
-
-
-
 
