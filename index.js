@@ -70,7 +70,9 @@ exports.init = function (sbot, config) {
   return self = {
     getState: function (_, cb) {
       if(!cb) cb = _
-      cb(null, state)
+      onReady(function () {
+        cb(null, state)
+      })
     },
     getAddress: function (id,  cb) {
       onReady(function () {
