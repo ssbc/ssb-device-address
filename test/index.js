@@ -49,9 +49,33 @@ tape('announce', function (t) {
 })
 
 
+tape('remove', function (t) {
+  alice.deviceAddress.announce({
+    address: null,
+    availability: 0
+  }, function (err, msg) {
+    if(err) throw err
+    console.log('published', msg)
+    setTimeout(function (){
+      alice.deviceAddress.getAddress(alice.id, function (err, data) {
+        t.notOk(err)
+        t.notOk(data)
+        t.end()
+      })
+    },1000)
+  })
+})
+
 tape('shutdown', function (t) {
   alice.close()
   t.end()
 })
+
+
+
+
+
+
+
 
 

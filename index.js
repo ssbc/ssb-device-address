@@ -34,15 +34,24 @@ exports.init = function (sbot, config) {
 
   function add(peer) {
     //TODO: update scuttlebot/plugins/gossip to accept multiserver addresses
-    sbot.gossip.add({key: peer.id, address: peer.address})
+    if(peer.availability)
+      sbot.gossip.add({key: peer.id, address: peer.address})
+    else
+      sbot.gossip.remove({key: peer.id})
+
+  }
+
+  function setState (data) {
+    if(!data.availability)
+      delete state[data.id]
+    else
+      state[data.id] = data
   }
 
   //build up the base state object
   pull(
     sbot.query.read({query: query(undefined), old: true, live: false, sync: false}),
     pull.drain(function (data) {
-      if(data.availability == null) data.availability = 0.33
-      state[data.id] = data
     }, function (err, data) {
       for(var k in state) add(state[k])
       ready = true
@@ -57,9 +66,7 @@ exports.init = function (sbot, config) {
   pull(
     sbot.query.read({query: query(undefined), old:false, live: true, sync: false}),
     pull.drain(function (data) {
-      if(data.availability == null) data.availability = 0.33
-      state[data.id] = data
-      add(data)
+      setState(data); add(data)
     })
   )
 
@@ -88,12 +95,15 @@ exports.init = function (sbot, config) {
         if(isString(opts.scope) && !ref.isAddress(opts.address)) {
           opts.address = sbot.getAddress(opts.scope)
         }
-        if(!ref.isAddress(opts.address) || 'object' == typeof opts.address)
-          return cb(new Error('not a valid address:'+opts.address))
+        if(opts.availability === 0)
+          delete opts.address
+        else {
+          if(!ref.isAddress(opts.address) || 'object' == typeof opts.address)
+            return cb(new Error('not a valid address:'+opts.address))
 
-        if(!(opts.availability >= 0 && opts.availability <= 1))
-          return cb(new Error('availability must be number between 0 and 1 inclusive'))
-
+          if(!(opts.availability >= 0 && opts.availability <= 1))
+            return cb(new Error('availability must be number between 0 and 1 inclusive'))
+        }
         sbot.publish({
           type: 'address',
           recps: opts.recps,
