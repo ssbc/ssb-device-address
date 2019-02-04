@@ -29,7 +29,6 @@ function query (id) {
   ]
 }
 exports.init = function (sbot, config) {
-
   var state = {}, _ts, waiting = [], ready = false, self
 
   function add(peer) {
@@ -51,8 +50,7 @@ exports.init = function (sbot, config) {
   //build up the base state object
   pull(
     sbot.query.read({query: query(undefined), old: true, live: false, sync: false}),
-    pull.drain(function (data) {
-    }, function (err, data) {
+    pull.drain(setState, function (err) {
       for(var k in state) add(state[k])
       ready = true
       while(waiting.length)
@@ -115,4 +113,8 @@ exports.init = function (sbot, config) {
     }
   }
 }
+
+
+
+
 
