@@ -35,9 +35,9 @@ Note, you can use multiple recps by just having more
 
 ## api
 
-### getAddress (id, cb) => multiserver_addr
+### getAddress (id, cb)
 
-return the public address for `id`, if one has been posted.
+Return the public address for `id`, if one has been posted.
 
 ### announce({address: addr?, availability:0-1}, cb)
 
