@@ -1,5 +1,6 @@
 var pull = require('pull-stream')
 var ref = require('ssb-ref')
+var help = require('./help')
 
 function isString(s) {
   return 'string' === typeof s
@@ -9,7 +10,8 @@ exports.name = 'device-address'
 exports.version = require('./package.json').version
 exports.manifest = {
   getAddress: 'async',
-  announce: 'async'
+  announce: 'async',
+  help: 'sync',
 }
 
 function query (id) {
@@ -103,6 +105,9 @@ exports.init = function (sbot, config) {
         }, cb)
 
       })
+    },
+    help: function () {
+      return help
     }
   }
 }
