@@ -9,7 +9,6 @@ exports.name = 'device-address'
 exports.version = require('./package.json').version
 exports.manifest = {
   getAddress: 'async',
-  getState: 'async',
   announce: 'async'
 }
 
@@ -73,12 +72,6 @@ exports.init = function (sbot, config) {
     else waiting.push(fn)
   }
   return self = {
-    getState: function (_, cb) {
-      if(!cb) cb = _
-      onReady(function () {
-        cb(null, state)
-      })
-    },
     getAddress: function (id,  cb) {
       onReady(function () {
         cb(null, state[id || sbot.id])
@@ -113,8 +106,6 @@ exports.init = function (sbot, config) {
     }
   }
 }
-
-
 
 
 
